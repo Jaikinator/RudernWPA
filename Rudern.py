@@ -2,12 +2,19 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-col_names = ["aX","aY","aZ","temp","gX", "gY", "gZ"]
+col_names = ["aX","aY","aZ","temp","gX", "gY", "gZ"]  # festlegen welche Daten importiert werden
 
-data = np.genfromtxt("Testmessung1.txt")
-Dataframe = pd.read_table("Testmessung1.txt", delim_whitespace = True, header=None ,usecols= [2,6,10,14,18,22,26],names= col_names)
-print(Dataframe)
-print(Dataframe.columns.values)
+Dataframe = pd.read_table("Testmessung1.txt", delim_whitespace = True, header=None ,usecols= [2,6,10,14,18,22,26],names= col_names) #einlesen der Daten
 
-plt.plot(Dataframe["aX"], Dataframe["aY"])
+time_sim = np.arange(0, (len(Dataframe["aX"]))) # zeitsimulation
+
+
+print(Dataframe) # print der Daten
+print(Dataframe.columns.values) # Print der Spaltennamen
+
+plt.plot(time_sim, Dataframe["gX"], label = "gyro X")
+plt.plot(time_sim, Dataframe["gY"], label = "gyro Y")
+plt.plot(time_sim, Dataframe["gZ"], label = "gyro Z")
+plt.legend()
 plt.show()
+
