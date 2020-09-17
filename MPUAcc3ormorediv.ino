@@ -12,6 +12,7 @@
 
 #include <Wire.h>
 #include"OneButton.h"
+#include<SD.h>
 OneButton start(2,true);
 const int MPU = 0x68; // MPU6050 I2C address
 float AccX, AccY, AccZ;
@@ -21,9 +22,10 @@ float roll, pitch, yaw;
 float AccErrorX, AccErrorY, GyroErrorX, GyroErrorY, GyroErrorZ;
 float elapsedTime, currentTime, previousTime;
 int c = 0;
+const int chipSelect = 4; //Chip Pin für SD Karte
 
 void setup() {
-
+if (startSDCard()==true){   // SD Karte prüfen
   start.attachDuringLongPress(longPress);
   
   Serial.begin(19200);
@@ -51,9 +53,9 @@ void setup() {
   
   delay(20);
 }
+}
 
 void loop() {
-  
  start.tick();    //Abfrage Taster
 }
 
@@ -157,6 +159,8 @@ void confMPU(const int MPU_select){
 
 void measureMPU(const int MPU_select){
    // === Read acceleromter data === //
+File dataFile = SD.open("rudern.csv", FILE_WRITE); //Datei unter Namen rudern auf SD Karte anlegen
+   
   Serial.print("I am MPU"), Serial.println(String(MPU_select));
   delay(1000);
   Wire.beginTransmission(MPU_select);
@@ -193,11 +197,33 @@ void measureMPU(const int MPU_select){
   roll = 0.96 * gyroAngleX + 0.04 * accAngleX;
   pitch = 0.96 * gyroAngleY + 0.04 * accAngleY;
   
-  // Print the values on the serial monitor
+  // Print the values on the serial monitor and SD Card
   Serial.print("AccX: "), Serial.print(AccX), Serial.print("g"), Serial.print("\t");
+  dataFile.print("AccX"),dataFile.print(AccX),dataFile.print("g"),dataFile.print(";");
   Serial.print("AccY: "), Serial.print(AccY), Serial.print("g"), Serial.print("\t");
+  dataFile.print("AccY"),dataFile.print(AccY),dataFile.print("g"),dataFile.print(";");
   Serial.print("AccZ: "), Serial.print(AccZ), Serial.print("g"), Serial.print("\t");
+  dataFile.print("AccZ"),dataFile.print(AccZ),dataFile.print("g"),dataFile.print(";");
   Serial.print("roll: "), Serial.print(roll), Serial.print("deg"), Serial.print("\t");
+  dataFile.print("roll"),dataFile.print(roll),dataFile.print("deg"),dataFile.print(";");
   Serial.print("pitch: "),Serial.print(pitch), Serial.print("deg"), Serial.print("\t");
+  dataFile.print("pitch"),dataFile.print(pitch),dataFile.print("deg"),dataFile.print(";");
   Serial.print("yaw: "), Serial.print(yaw), Serial.println("deg");
+  dataFile.print("yaw: "),dataFile.print(yaw),dataFile.print("deg");
+}
+
+boolean startSDCard(){
+  boolean result = false;
+  pinMode(4,OUTPUT);
+  if(!SD.begin(chipSelect)){  //Überprüfen, ob SD Karte gelesen werden kann
+    result = false;
+  }
+  else { //wenn ja, Datei anlegen
+    File dataFile = SD.open("datalog.csv" FILE_WRITE);
+    if (dataFile) {
+      dataFile.close();
+      result=true;
+    }
+  }
+  return result;
 }
