@@ -4,14 +4,18 @@ import matplotlib.pyplot as plt
 
 col_names = ["aX","aY","aZ","temp","gX", "gY", "gZ"]  # festlegen welche Daten importiert werden
 
-Dataframe = pd.read_excel("RUDERN_Messung.xlsx") #einlesen der Daten
+Dataframe = pd.read_excel("RUDERN_Messung.xlsx")#einlesen der Daten
+
+#def get_dataset(arduino,Messung):
+
 
 #time_sim = np.arange(0, (len(Dataframe["aX"]))) # zeitsimulation
 
 
-print(Dataframe) # print der Daten
+print(Dataframe[Dataframe["AccX [g]"] == "Pause"].index.values) # print der Daten
 print(Dataframe.columns.values) # Print der Spaltennamen
-
+Dataframe_copy = Dataframe.copy().drop([:])
+print(Dataframe_copy)
 #velocitiy_x = np.trapz(Dataframe["aX"].to_numpy())
 # Grafische Darstellung der Daten
 #print(velocitiy_x )
