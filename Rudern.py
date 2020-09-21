@@ -6,16 +6,42 @@ col_names = ["aX","aY","aZ","temp","gX", "gY", "gZ"]  # festlegen welche Daten i
 
 Dataframe = pd.read_excel("RUDERN_Messung.xlsx")#einlesen der Daten
 
-#def get_dataset(arduino,Messung):
+
+headers = Dataframe.columns.values
+
+def get_dataset(arduino = 1 ,Messung = 0,df = Dataframe):
+
+    Dataframe = df.dropna(subset=["AccX [g]"]).reset_index(drop= True)
+
+    headers = df.columns.values  # Print der Spaltennamen
+
+    pause_array = Dataframe[Dataframe["AccX [g]"] == "Pause"].index.values #Array mit Pausen stellen
+
+    select_measure =  Dataframe[pause_array[Messung]+1: pause_array[Messung+1]].reset_index(drop = True)
+
+    output_frame = pd.DataFrame(columns = headers)
 
 
+    i = 0
+    while i < len(select_measure):
+         output_frame = output_frame.append(select_measure.loc[arduino+i], ignore_index= True)
+         i += 3
+
+    return output_frame
+
+print(get_dataset())
+
+"""
+newframe = pd.DataFrame(columns = headers )
+
+print(newframe.append(Dataframe.loc[2])) #appand dataframe
 #time_sim = np.arange(0, (len(Dataframe["aX"]))) # zeitsimulation
+Dataframe["index1"] = Dataframe.index
 
-
-print(Dataframe[Dataframe["AccX [g]"] == "Pause"].index.values) # print der Daten
+testframe = Dataframe.dropna(subset=["AccX [g]"])
+print( testframe[testframe["AccX [g]"] == "Pause"].index.values) # print der Daten
 print(Dataframe.columns.values) # Print der Spaltennamen
-Dataframe_copy = Dataframe.copy().drop([:])
-print(Dataframe_copy)
+"""
 #velocitiy_x = np.trapz(Dataframe["aX"].to_numpy())
 # Grafische Darstellung der Daten
 #print(velocitiy_x )
