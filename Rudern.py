@@ -17,7 +17,7 @@ def get_dataset(arduino = 1 ,Messung = 0,df = Dataframe):
 
     pause_array = Dataframe[Dataframe["AccX [g]"] == "Pause"].index.values #Array mit Pausen stellen
 
-    select_measure =  Dataframe[pause_array[Messung]+1: pause_array[Messung+1]].reset_index(drop = True)
+    select_measure = Dataframe[pause_array[Messung]+1: pause_array[Messung+1]].reset_index(drop = True)
 
     output_frame = pd.DataFrame(columns = headers)
 
@@ -27,9 +27,15 @@ def get_dataset(arduino = 1 ,Messung = 0,df = Dataframe):
          output_frame = output_frame.append(select_measure.loc[arduino+i], ignore_index= True)
          i += 3
 
+    output_frame["AccX [g]"] = output_frame["AccX [g]"].astype(float)
+
     return output_frame
 
-print(get_dataset())
+dataset_1 = get_dataset()
+
+velocitiy_x = np.trapz(dataset_1["AccX [g]"].to_numpy(), x = dataset_1["time [s]"].to_numpy())
+
+print(velocitiy_x)
 
 """
 newframe = pd.DataFrame(columns = headers )
