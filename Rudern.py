@@ -11,6 +11,23 @@ def velocity(df):
     accX = df[headers[0]].to_numpy()
     accY = df[headers[1]].to_numpy()
     accZ = df[headers[2]].to_numpy()
+    time = df["time [s]"].to_numpy()
+
+    velocity_x = np.zeros(len(accX))
+    velocity_y = np.zeros(len(accY))
+    velocity_z = np.zeros(len(accZ))
+
+    for i in range(len(accX)):
+
+        velocity_x[i] = np.trapz(accX[i-1 : i+1], x =  time[i-1 : i+1])
+        velocity_y[i] = np.trapz(accY[i-1 : i+1], x =  time[i-1 : i+1])
+        velocity_z[i] = np.trapz(accZ[i-1 : i+1], x =  time[i-1 : i+1])
+        print(accX[i-1 : i+1 ])
+    df.insert(7, "v_X [m/s^2]", velocity_x)
+    df.insert(8, "v_Y [m/s^2]", velocity_y)
+    df.insert(9, "v_Z [m/s^2]", velocity_z)
+
+    return df
 
 def get_dataset(arduino, Messung, df = Dataframe):
 
@@ -32,22 +49,21 @@ def get_dataset(arduino, Messung, df = Dataframe):
 
     output_frame["AccX [g]"] = output_frame["AccX [g]"].astype(float)
 
+    output_frame = velocity(output_frame)
     return output_frame
 
 dataset_1 = get_dataset(0,1)
 
-velocitiy_x = np.trapz(dataset_1["AccX [g]"].to_numpy(), x = dataset_1["time [s]"].to_numpy())
-
 time_set = dataset_1["time [s]"].to_numpy()
-
-print(velocitiy_x)
 
 headers = dataset_1.columns.values
 
 print(dataset_1)
 
 
-plt.plot(time_set, dataset_1[headers[0]], label = "acc X")
+plt.plot(time_set, dataset_1[headers[-2]], label = "VX")
+plt.plot(time_set, dataset_1[headers[0]], label = "accX")
+
 plt.plot(time_set, dataset_1[headers[1]], label = "acc Y")
 plt.plot(time_set, dataset_1[headers[2]], label = "acc Z")
 plt.legend()
