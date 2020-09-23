@@ -17,7 +17,7 @@ velocitiy_x = np.trapz(Dataframe["aX"].to_numpy())
 print(velocitiy_x )
 #plt.plot(time_sim,velocitiy_x)
 #plt.show()
-'''
+
 plt.subplot(211)
 plt.plot(time_sim, Dataframe["gX"], label = "gyro X")
 plt.plot(time_sim, Dataframe["gY"], label = "gyro Y")
@@ -30,4 +30,3 @@ plt.plot(time_sim, Dataframe["aY"], label = "acc Y")
 plt.plot(time_sim, Dataframe["aZ"], label = "acc Z")
 plt.legend()
 plt.show()
-'''

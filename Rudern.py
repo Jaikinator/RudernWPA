@@ -2,14 +2,17 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-col_names = ["aX","aY","aZ","temp","gX", "gY", "gZ"]  # festlegen welche Daten importiert werden
-
 Dataframe = pd.read_excel("RUDERN_Messung.xlsx")#einlesen der Daten
 
 
-headers = Dataframe.columns.values
+def velocity(df):
+    headers = df.columns.values
 
-def get_dataset(arduino = 1 ,Messung = 0,df = Dataframe):
+    accX = df[headers[0]].to_numpy()
+    accY = df[headers[1]].to_numpy()
+    accZ = df[headers[2]].to_numpy()
+
+def get_dataset(arduino, Messung, df = Dataframe):
 
     Dataframe = df.dropna(subset=["AccX [g]"]).reset_index(drop= True)
 
@@ -31,39 +34,22 @@ def get_dataset(arduino = 1 ,Messung = 0,df = Dataframe):
 
     return output_frame
 
-dataset_1 = get_dataset()
+dataset_1 = get_dataset(0,1)
 
 velocitiy_x = np.trapz(dataset_1["AccX [g]"].to_numpy(), x = dataset_1["time [s]"].to_numpy())
 
+time_set = dataset_1["time [s]"].to_numpy()
+
 print(velocitiy_x)
 
-"""
-newframe = pd.DataFrame(columns = headers )
+headers = dataset_1.columns.values
 
-print(newframe.append(Dataframe.loc[2])) #appand dataframe
-#time_sim = np.arange(0, (len(Dataframe["aX"]))) # zeitsimulation
-Dataframe["index1"] = Dataframe.index
+print(dataset_1)
 
-testframe = Dataframe.dropna(subset=["AccX [g]"])
-print( testframe[testframe["AccX [g]"] == "Pause"].index.values) # print der Daten
-print(Dataframe.columns.values) # Print der Spaltennamen
-"""
-#velocitiy_x = np.trapz(Dataframe["aX"].to_numpy())
-# Grafische Darstellung der Daten
-#print(velocitiy_x )
-#plt.plot(time_sim,velocitiy_x)
-#plt.show()
-'''
-plt.subplot(211)
-plt.plot(time_sim, Dataframe["gX"], label = "gyro X")
-plt.plot(time_sim, Dataframe["gY"], label = "gyro Y")
-plt.plot(time_sim, Dataframe["gZ"], label = "gyro Z")
+
+plt.plot(time_set, dataset_1[headers[0]], label = "acc X")
+plt.plot(time_set, dataset_1[headers[1]], label = "acc Y")
+plt.plot(time_set, dataset_1[headers[2]], label = "acc Z")
 plt.legend()
 
-plt.subplot(212)
-plt.plot(time_sim, Dataframe["aX"], label = "acc X")
-plt.plot(time_sim, Dataframe["aY"], label = "acc Y")
-plt.plot(time_sim, Dataframe["aZ"], label = "acc Z")
-plt.legend()
 plt.show()
-'''
